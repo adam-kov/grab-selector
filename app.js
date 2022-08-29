@@ -4,8 +4,8 @@ const HIGHLIGHTER_ID = 'selector-grab-highlighter';
 let lastHighlightTarget;
 
 function terminate() {
+	// The `click` listener is automatically removed after it has been called once
 	window.removeEventListener('mousemove', throttle(updateHighlight));
-	window.removeEventListener('click', grabSelector);
 	window.removeEventListener('keydown', checkTerminateKeys);
 	removeHighlight();
 };
@@ -45,7 +45,7 @@ function removeHighlight() {
 	}
 };
 
-function grabSelector(event) {
+async function grabSelector(event) {
 	event.preventDefault();
 	const { target } = event;
 	if (!(target instanceof HTMLElement)) {
@@ -53,30 +53,54 @@ function grabSelector(event) {
 		return;
 	}
 
-	const selector = `${getSelector(target)}:nth-child(${getChildIndex(target)})`;
-	navigator?.clipboard?.writeText(selector);
+	try {
+		await navigator?.clipboard?.writeText(generateSelector(target))
+	} catch (err) {
+		console.error('Could not write selector to clipboard\nError: ' + err)
+	}
 	terminate();
+};
+
+function generateSelector(element) {
+	if (!element) return '';
+
+	let selector = getSelector(element);
+	while(!isUnique(selector) && element) {
+		element = element.parentElement;
+		const newSelector = getSelector(element);
+		if(newSelector) selector = newSelector + '>' + selector;
+	}
+
+	return selector;
 };
 
 function getSelector(element) {
 	if (!element) return '';
 
-	const { tagName, id, className, parentElement } = element;
+	const { tagName, id } = element;
 	const tag = tagName.toLowerCase();
 	if (tag === 'body' || tag === 'html') return tag;
 
-	let str = tagName.toLowerCase();
-	str += id != '' ? '#' + id : '';
+	let selector = tag;
+	if(!isUnique(selector)) selector += id ? '#' + id : '';
 
-	if (className) {
-		className.split(/\s/).forEach((c) => (str += '.' + c));
-	}
+	return appendPseudoSelector(element, selector);
+};
 
-	return getSelector(parentElement) + '>' + str;
+function appendPseudoSelector(element, selector) {
+	return isUnique(selector) ? selector : `${selector}:nth-child(${getChildIndex(element)})`;
 };
 
 function getChildIndex({ previousElementSibling: sibling }) {
 	return sibling ? getChildIndex(sibling) + 1 : 1;
+};
+
+function getQueryLength(selector) {
+	return document.querySelectorAll(selector).length;
+};
+
+function isUnique(selector) {
+	return getQueryLength(selector) <= 1;
 };
 
 function checkTerminateKeys(event) {

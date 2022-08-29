@@ -9,6 +9,6 @@ chrome.action.onClicked.addListener((tab) => {
 function setup() {
 	addHighlight();
 	window.addEventListener('mousemove', throttle(updateHighlight));
-	window.addEventListener('click', grabSelector, {capture: true});
+	window.addEventListener('click', grabSelector, {capture: true, once: true});
 	window.addEventListener('keydown', checkTerminateKeys);
 };

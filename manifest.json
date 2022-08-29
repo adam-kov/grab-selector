@@ -1,7 +1,7 @@
 {
-  "name": "Selector Grab",
+  "name": "Grab Selector",
   "description": "Extension to quickly grab the selector of an element",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting"],
   "background": {
