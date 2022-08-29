@@ -6,6 +6,7 @@ Chrome extension to quickly grab the selector of an element, so setting up a scr
 
 1. Clone the repo
 1. Type `chrome://extensions/` in the Chrome search bar
+1. Enable `Developer mode`
 1. Click `Load unpacked`
 1. Select the folder of the repo
 1. Enjoy
