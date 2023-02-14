@@ -1,3 +1,5 @@
+![Icon](./icon.png)
+
 # Grab Selector
 
 Chrome extension to quickly grab the selector of an element, so setting up a scraper becomes a lot faster.
